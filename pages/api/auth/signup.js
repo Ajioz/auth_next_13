@@ -1,3 +1,4 @@
+import { hashPassword } from "../../../lib/auth-utill";
 import { connectDB } from "../../../lib/db";
 
 const isValidEmail = (email) => {
@@ -18,13 +19,16 @@ export const signupHandler = async (req, res) => {
           .json({ status: false, message: "Invalid email" });
       }
 
-      if (!password || password.trim() === "") {
-        return res
-          .status(422)
-          .json({ status: false, message: "Invalid input" });
+      if (!password || password.trim().length < 7 === "") {
+        return res.status(422).json({
+          status: false,
+          message: "Invalid input - above seven character required",
+        });
       }
 
-      const newUser = { email, password };
+      const hashedPassword = await hashPassword(password);
+
+      const newUser = { email, hashedPassword };
       const user = db.collection("users").insertOne(newUser);
 
       return res
