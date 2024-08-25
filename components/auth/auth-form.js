@@ -12,9 +12,7 @@ const createUser = async (email, password) => {
 
   const data = await res.json();
 
-  if (!data.status) {
-    throw new Error(data.message || "Something went wrong!");
-  }
+  if (!data.status) throw new Error(data.message || "Something went wrong!");
 
   return data;
 };
@@ -28,21 +26,26 @@ function AuthForm() {
     setIsLogin((prevState) => !prevState);
   }
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
 
     if (isLogin) {
     } else {
-      createUser(email, password);
+      try {
+        const response = await createUser(email, password);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   return (
     <section className={classes.auth}>
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
-      <form>
+      <form onSubmit={submitHandler}>
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
           <input type="email" id="email" ref={emailRef} required />

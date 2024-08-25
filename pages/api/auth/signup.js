@@ -29,7 +29,7 @@ export const signupHandler = async (req, res) => {
       const hashedPassword = await hashPassword(password);
 
       const newUser = { email, password: hashedPassword };
-      const user = db.collection("users").insertOne(newUser);
+      await db.collection("users").insertOne(newUser);
 
       return res
         .status(201)
