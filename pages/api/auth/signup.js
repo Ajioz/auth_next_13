@@ -6,20 +6,41 @@ const isValidEmail = (email) => {
 };
 
 export const signupHandler = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const client = await connectDB();
-    const db = client.db();
+  if (req.method === "POST") {
+    try {
+      const { email, password } = req.body;
+      const client = await connectDB();
+      const db = client.db();
 
-    if (!isValidEmail(email)) {
-      return res.status(422).json({ status: false, message: "Invalid email" });
+      if (!isValidEmail(email)) {
+        return res
+          .status(422)
+          .json({ status: false, message: "Invalid email" });
+      }
+
+      if (!password || password.trim() === "") {
+        return res
+          .status(422)
+          .json({ status: false, message: "Invalid input" });
+      }
+
+      const newUser = { email, password };
+      const user = db.collection("users").insertOne(newUser);
+
+      return res
+        .status(201)
+        .json({ status: true, message: "successfully added user" });
+    } catch (error) {
+      console.error("Error processing request:", error);
+      return res
+        .status(500)
+        .json({ message: "Failed to send message", status: false });
+    } finally {
+      client.close();
     }
-
-    if (!password || password.trim() === "") {
-      return res.status(422).json({ status: false, message: "Invalid input" });
-    }
-
-    const newUser = { email, password };
-    const user = db.collection("users").insertOne();
-  } catch (error) {}
+  } else {
+    return res
+      .status(405)
+      .json({ message: "Method not allowed", status: false });
+  }
 };
