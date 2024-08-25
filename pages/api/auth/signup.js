@@ -26,6 +26,13 @@ export const signupHandler = async (req, res) => {
         });
       }
 
+      const isUserExist = await db.collection("users").findOne({ email });
+
+      if (isUserExist)
+        return res
+          .status(422)
+          .json({ status: false, message: "User already exist" });
+
       const hashedPassword = await hashPassword(password);
 
       const newUser = { email, password: hashedPassword };
