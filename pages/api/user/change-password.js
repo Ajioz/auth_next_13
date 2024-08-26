@@ -1,4 +1,3 @@
-import { getSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
 import { connectDB } from "../../../lib/db";
 import { hashPassword, verifyPassword } from "../../../lib/auth-utill";
