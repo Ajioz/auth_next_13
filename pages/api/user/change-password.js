@@ -1,10 +1,12 @@
 import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
 import { connectDB } from "../../../lib/db";
 import { hashPassword } from "../../../lib/auth-utill";
 
 const handler = async (req, res) => {
   if (req.method === "PATCH") {
-    const session = await getSession({ req: req });
+    // const session = await getSession({ req: req });
+    const session = await getToken({ req, secret: null });
     console.log(session);
     if (!session) {
       return res

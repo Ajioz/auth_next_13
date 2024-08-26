@@ -5,8 +5,11 @@ import { verifyPassword } from "../../../lib/auth-utill";
 // import EmailProvider from "next-auth/providers/email";
 
 export default NextAuth({
+  // session: {
+  //   jwt: true,
+  // },
   session: {
-    jwt: true,
+    strategy: "jwt", // Ensure this is set to "jwt" if you're not using a database
   },
   providers: [
     CredentialsProvider({
@@ -37,7 +40,7 @@ export default NextAuth({
             email: user.email,
           };
         } catch (error) {
-          console.error(error.message)
+          console.error(error.message);
         } finally {
           client.close();
         }
