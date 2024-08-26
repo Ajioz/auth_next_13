@@ -1,28 +1,29 @@
 import { getSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
 import { connectDB } from "../../../lib/db";
-import { hashPassword } from "../../../lib/auth-utill";
+import { hashPassword, verifyPassword } from "../../../lib/auth-utill";
 
 const handler = async (req, res) => {
   if (req.method === "PATCH") {
-    // const session = await getSession({ req: req });
-    const session = await getToken({ req, secret: null });
-    console.log(session);
+    let client;
+    const session = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
     if (!session) {
       return res
         .status(401)
         .json({ message: "Not Authenticated", status: false, session });
     }
 
-    const userEmail = session.user.email;
+    const userEmail = session.email;
     const { oldPassword, newPassword } = req.body;
-    let client;
     try {
       client = await connectDB();
       const db = client.db();
       const user = await db.collection("users").findOne({ email: userEmail });
 
-      const isValid = await verifyPassword(user.password, oldPassword);
+      const isValid = await verifyPassword(oldPassword, user.password);
 
       if (!isValid) {
         return res.status(403).json({
