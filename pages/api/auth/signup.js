@@ -6,11 +6,12 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
-export const signupHandler = async (req, res) => {
+const signupHandler = async (req, res) => {
   if (req.method === "POST") {
+    let client;
     try {
       const { email, password } = req.body;
-      const client = await connectDB();
+      client = await connectDB();
       const db = client.db();
 
       if (!isValidEmail(email)) {
@@ -55,3 +56,6 @@ export const signupHandler = async (req, res) => {
       .json({ message: "Method not allowed", status: false });
   }
 };
+
+
+export default signupHandler;
