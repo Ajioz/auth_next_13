@@ -5,10 +5,11 @@ import { hashPassword } from "../../../lib/auth-utill";
 const handler = async (req, res) => {
   if (req.method === "PATCH") {
     const session = await getSession({ req: req });
+    console.log(session);
     if (!session) {
       return res
         .status(401)
-        .json({ message: "Not Authenticated", status: false });
+        .json({ message: "Not Authenticated", status: false, session });
     }
 
     const userEmail = session.user.email;
