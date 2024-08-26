@@ -17,21 +17,26 @@ const handler = async (req, res) => {
     try {
       client = await connectDB();
       const db = client.db();
-      const user = await db.collection("users").findOne({ userEmail });
+      const user = await db.collection("users").findOne({ email: userEmail });
 
-      const hashCheck = await hashPassword(oldPassword);
-      const isValid = await verifyPassword(user.password, hashCheck);
+      const isValid = await verifyPassword(user.password, oldPassword);
 
       if (!isValid) {
-        return res.status(422).json({
+        return res.status(403).json({
           message: "Your Password did not match!",
           status: false,
         });
       }
+
       const hashedPassword = await hashPassword(newPassword);
-      user.password = hashedPassword;
-      const result = await db.collection("users").save(user);
-      if (result) {
+      const updateUser = await db
+        .collection("users")
+        .updateOne(
+          { email: userEmail },
+          { $set: { password: hashedPassword } }
+        );
+
+      if (updateUser) {
         return res
           .status(201)
           .json({ status: true, message: "password updated!" });
